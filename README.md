@@ -30,43 +30,82 @@ EXTRA CREDIT - Analyze how much money is spent per member
 
 ## Instructions
 The below diagram shows the project architecture.  
-- Using Azure Portal to Create Postgres flexible server & Synapse Analysis workspace.
-- Using Python to Create udacityproject database & upload csv data. 
-- Using Synapse to Ingest data from Postgres OLTP and saving each table to txt file in Data Lake Storage G2.
-- Staging each file in Data Lake G2 to External Table in Synapse.
-- Create Star Schema in Synapse.
-- Transform Data using SQL to SQL to transforme data from staging to star schema
+- Create your Azure resources.
+- Design a star schema. 
+- Create the data in PostgreSQL.
+- EXTRACT the data from PostgreSQL.
+- LOAD the data into external tables in the data warehouse
+- TRANSFORM the data to the star schema
 - Applied data analysis.
 
 
 
-### Using Azure Portal to Create Postgres flexible server & Synapse Analysis workspace.
-using your Azure credential to create postgres flexible server and Synapse Analysis workspace 
-![ create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
+### Create your Azure resources.
+- Create an Azure PostgreSQL database
+- Create an Azure Synapse workspace. 
 
-### Using Python to Create udacityproject database & upload csv data.
-TODO
-![ create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
+![create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
 
-### Using Synapse to Ingest data from Postgres OLTP and saving each table to txt file in Data Lake Storage G2.
-TODO
-![ create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
+### Design a star schema.
+To provide a relational schema that describes the data as it exists in PostgreSQL. In addition, the designed should address given set of business requirements related to the data warehouse.The below ERD describe the **star schema** with tow Fact tables for payemts and trips surrounded by dimensions tables
 
-### Staging each file in Data Lake G2 to External Table in Synapse.
-TODO
-![ create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
+![Star Schema](BikeShareERD.png "Star Schema")
 
-### Create Star Schema in Synapse.
-TODO
-![ create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
+also you can find the 
+[Star Schema SQL script](../../raw/main/SQLScript/Star_schema.sql).
 
-### Transform Data using SQL to SQL to transforme data from staging to star schema
-TODO
-![ create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
+
+### Create the data in PostgreSQL
+To prepare your environment for this project, you first must create the data in PostgreSQL. This will simulate the production environment where the data is being used in the OLTP system. This can be done using the Python script provided for you in Github: ProjectDataToPostgres.py
+
+- Download the script file and place it in a folder where you can run a Python script
+- Download the data files from the classroom resources
+- Open the script file in VS Code and add the host, username, and password information for your PostgreSQL database
+- Run the script and verify that all four data files are copied/uploaded into PostgreSQL
+
+![provisioning_postgres_via_Python](screenshoots/provisioning_postgres_via_Python.PNG "provisioning_postgres_via_Python")
+- You can verify this data exists by using pgAdmin or a similar PostgreSQL data tool.
+
+![postgrescreatedConfirmation.PNG](screenshoots/postgrescreatedConfirmation.PNG "postgrescreatedConfirmation")
+
+### EXTRACT the data from PostgreSQL.
+In your Azure Synapse workspace you will 
+- Use the ingest wizard to create a one-time pipeline that ingests the data from PostgreSQL into Azure Blob Storage.
+
+![ Ingest](screenshoots/Ingest.PNG "Ingest")
+- This will result in all four tables being represented as text files in Blob Storage, ready for loading into the data warehouse.
+
+![ CopiedFromPostgres](screenshoots/CopiedFromPostgres.PNG "CopiedFromPostgres")
+
+
+### LOAD the data into external tables in the data warehouse.
+Once in Blob storage, the files will be shown in the data lake node in the Synapse Workspace. From here, you can use the script-generating function to load the data from blob storage into external staging tables in the data warehouse.
+also you can find SQL script for External Tables : [payment](../../raw/main/SQLScript/stage_payment.sql) , [rider](../../raw/main/SQLScript/stage_rider.sql),[station](../../raw/main/SQLScript/stage_station.sql) and  [trip](../../raw/main/SQLScript/stage_trip.sql)
+
+![ ExternalTables](screenshoots/ExternalTables.PNG "ExternalTables")
+
+### TRANSFORM the data to the star schema
+SQL scripts to transform the data from the staging tables to the final star schema you designed.
+you can find [Transform script](../../raw/main/SQLScript/Transform.sql)
+![ Star](screenshoots/Star.PNG "Star")
 
 ### Applied data analysis
-TODO
-![ create_postgres_synapse](screenshoots/create_postgres_synapse.PNG "create_postgres_synapse")
+After applied all previous steps , now it is time to do example of data analysis by invoke  [SQL Query](../../raw/main/SQLScript/Analysis.sql) on Star Schema to extract total payments by year, quarter and month
+```sql
+SELECT 
+	t2.year
+	,t2.quarter 
+	,t2.month
+	,sum([amount]) as TotalAmount
+FROM 
+	[dbo].[FactPayment] t1
+ 	join [dbo].[DimDate] t2 on t1.date_id=t2.time_id
+group by 
+	t2.year,t2.quarter ,t2.month
+order by 
+	1,2,3
+```
+![ Analysis](screenshoots/Analysis.PNG "Analysis")
 
 
 
