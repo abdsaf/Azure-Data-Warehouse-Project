@@ -15,7 +15,7 @@ CREATE TABLE [DimDate](
 	[week_of_year] [int] NULL 
 ) 
 GO
-/****** Object:  Table [DimRider]    Script Date: 3/27/2023 11:55:21 PM ******/
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -33,7 +33,7 @@ CREATE TABLE [DimRider](
  
 ) 
 GO
-/****** Object:  Table [DimStation]    Script Date: 3/27/2023 11:55:21 PM ******/
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -46,7 +46,7 @@ CREATE TABLE [DimStation](
  
 ) 
 GO
-/****** Object:  Table [FactPayment]    Script Date: 3/27/2023 11:55:21 PM ******/
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -59,7 +59,7 @@ CREATE TABLE [FactPayment](
  
 ) 
 GO
-/****** Object:  Table [FactTrips]    Script Date: 3/27/2023 11:55:21 PM ******/
+
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -76,34 +76,5 @@ CREATE TABLE [FactTrips](
 	[duration] [float] NULL
  
 ) 
-GO
-ALTER TABLE [FactPayment]  WITH CHECK ADD  CONSTRAINT [FK_FactPayment_DimDate] FOREIGN KEY([date_id])
-REFERENCES [DimDate] ([Time_id])
-GO
-ALTER TABLE [FactPayment] CHECK CONSTRAINT [FK_FactPayment_DimDate]
-GO
-ALTER TABLE [FactPayment]  WITH CHECK ADD  CONSTRAINT [FK_FactPayment_DimRider] FOREIGN KEY([rider_id])
-REFERENCES [DimRider] ([rider_id])
-GO
-ALTER TABLE [FactPayment] CHECK CONSTRAINT [FK_FactPayment_DimRider]
-GO
-ALTER TABLE [FactTrips]  WITH CHECK ADD  CONSTRAINT [FK_FactTrips_DimDate] FOREIGN KEY([start_at_id])
-REFERENCES [DimDate] ([Time_id])
-GO
-ALTER TABLE [FactTrips] CHECK CONSTRAINT [FK_FactTrips_DimDate]
-GO
-ALTER TABLE [FactTrips]  WITH CHECK ADD  CONSTRAINT [FK_FactTrips_DimDate1] FOREIGN KEY([ended_at_id])
-REFERENCES [DimDate] ([Time_id])
-GO
-ALTER TABLE [FactTrips] CHECK CONSTRAINT [FK_FactTrips_DimDate1]
-GO
-ALTER TABLE [FactTrips]  WITH CHECK ADD  CONSTRAINT [FK_FactTrips_DimStation] FOREIGN KEY([start_station_id])
-REFERENCES [DimStation] ([station_id])
-GO
-ALTER TABLE [FactTrips] CHECK CONSTRAINT [FK_FactTrips_DimStation]
-GO
-ALTER TABLE [FactTrips]  WITH CHECK ADD  CONSTRAINT [FK_FactTrips_DimStation1] FOREIGN KEY([end_station_id])
-REFERENCES [DimStation] ([station_id])
-GO
-ALTER TABLE [FactTrips] CHECK CONSTRAINT [FK_FactTrips_DimStation1]
+
 GO
