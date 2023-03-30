@@ -22,27 +22,27 @@ SELECT
 FROM 
 	[dbo].[station]
 
+DECLARE @StartDate DATETIME
+DECLARE @EndDate DATETIME
+SET @StartDate = (SELECT MIN(TRY_CONVERT(datetime, left(start_at, 19))) FROM [dbo].[trip])
+SET @EndDate = DATEADD(year, 5, (SELECT MAX(TRY_CONVERT(datetime, left(start_at, 19))) FROM [dbo].[trip]))
 
-with table1 as 
-(	select distinct   [start_at]  FROM [dbo].[trip] 
-	union 
-	select distinct  [ended_at]  FROM [dbo].[trip] 
-	union 
-	select distinct [date] from [dbo].[payment] 
-)
+WHILE @StartDate <= @EndDate
+      BEGIN
+             INSERT INTO [dim_date]
+             SELECT
+                   	@StartDate,
+        		DATEPART(DAY,@StartDate),
+        		DATENAME(WEEKDAY,@StartDate),
+        		DATEPART(MONTH,@StartDate),
+        		DATENAME(MONTH,@StartDate),
+        		DATEPART(year,@StartDate),
+        		DATEPART(Quarter,@StartDate) ,
+        		DATEPART(WEEK,@StartDate)
 
-insert into dbo.DimDate
-select  
-        t.start_at,
-        DATEPART(DAY,t.start_at),
-        DATENAME(WEEKDAY,t.start_at),
-        DATEPART(MONTH,t.start_at),
-        DATENAME(MONTH,t.start_at),
-        DATEPART(year,t.start_at),
-        DATEPART(Quarter,t.start_at) ,
-        DATEPART(WEEK,t.start_at)
-from 
-	table1 t
+             SET @StartDate = DATEADD(dd, 1, @StartDate)
+      END
+
 
 insert into dbo.[FactPayment]
 SELECT 
